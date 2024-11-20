@@ -93,10 +93,11 @@ class PostData:
 
         # Prepare the insert query and data
         query = """
-        INSERT INTO secret (secretMessage, retrievalCount, expiration)
+        INSERT INTO secret (hashId, secretMessage, retrievalCount, expiration)
         VALUES (?, ?, ?)
         """
         data = (
+            self.hash,
             self.secret_text,
             self.expire_after_views,
             self.expire_after

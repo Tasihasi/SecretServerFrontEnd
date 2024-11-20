@@ -8,8 +8,8 @@ def create_app():
     app = Flask(__name__)
 
     # TODO correct path
-    app.config.from_object('config.Config')
-    #app.config.from_object('app.config.Config')
+    #app.config.from_object('config.Config')
+    app.config.from_object('app.config.Config')
 
     # Initialize the database with the app
     db.init_app(app)
