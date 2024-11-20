@@ -14,6 +14,9 @@ const Save: React.FC = () => {
     expiryDate: 0,
   });
 
+  const [hash, setHash] = useState<string | null>(null);  // New state to store the hash
+
+
   // Handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -49,6 +52,9 @@ const Save: React.FC = () => {
         const result = await response.json();
         console.log('Response from server:', result);
 
+        setHash(result.Hash);
+
+
       } else {
         console.error('Error:', response.statusText);
       }
@@ -59,6 +65,16 @@ const Save: React.FC = () => {
   };
 
 
+  // Copy hash to clipboard
+  const copyToClipboard = () => {
+    if (hash) {
+      navigator.clipboard.writeText(hash).then(() => {
+        alert('Hash copied to clipboard!');
+      }).catch((error) => {
+        console.error('Failed to copy: ', error);
+      });
+    }
+  };
 
 
   return (
@@ -107,6 +123,14 @@ const Save: React.FC = () => {
 
         <button type="submit" className="submit-button">Save Secret</button>
       </form>
+
+      {hash && (
+        <div className="hash-container">
+          <h4 className="hash-display">Your Secret Hash: {hash}</h4>
+          <h5>Copy it will be visible once</h5>
+          <button onClick={copyToClipboard} className="copy-button">Copy to Clipboard</button>
+        </div>
+      )}
     </div>
   );
 };
