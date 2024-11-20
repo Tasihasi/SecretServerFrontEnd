@@ -86,15 +86,24 @@ class PostData:
             "expiration_date": self.expiration_date.isoformat() if self.expiration_date else None,
         }
     
+    def _check_necessary_data(self) -> bool:
+        if self.hash and self.secret_text and self.expire_after and self.expire_after_views:
+            return True
+        
+        return False
+    
     def post_to_db(self) -> bool:
+
+        if not self._check_necessary_data():
+            return False
 
         # Get the database connection
         db = get_db()
 
         # Prepare the insert query and data
         query = """
-        INSERT INTO secret (hashId, secretMessage, retrievalCount, expiration)
-        VALUES (?, ?, ?)
+        INSERT INTO secret (hashText, secretMessage, retrievalCount, expiration)
+        VALUES (?, ?, ?, ?)
         """
         data = (
             self.hash,
