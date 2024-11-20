@@ -2,7 +2,6 @@ from flask import current_app as app, render_template
 from flask import Blueprint, request, jsonify
 from ..model import GetData, PostData
 from .Is_valid_request import is_valid_request
-import logging
 
 # Create a blueprint instance
 main_blueprint = Blueprint('main', __name__)
@@ -12,34 +11,35 @@ def home():
     return "<p>Hello, World!</p>"
 
 
-@main_blueprint.route("/secret/<hash>", methods=['GET', 'POST'])
-@main_blueprint.route("/secret/", methods=['GET', 'POST'])  # This handles the case where no hash is provided.
-def secret(hash=None):
-    print("hii")
-    logging.info("hii")
-    if hash:        # Needs to check if the hash in the route bacse ether i will get an error
-        if request.method == 'POST':
-            return jsonify({"Error": "POST request not allowed for specific hash."}), 400
-        # If a hash is provided, return the hash or perform some other logic.
-
-        get_data = GetData(hash)
-        return get_data.get_secret()
-        
-    if request.method == 'GET':
-        
-
-        return jsonify({"Error" : "Invalid input"}), 405
-    
+# Route to handle POST request for creating a new secret and GET for retrieving it by hash
+@main_blueprint.route("/secret", methods=['POST'])  # Only POST for creating secret
+def save_secret():
     if not is_valid_request(request):
-        return jsonify({"Error" : "Invalid input"}), 405
+        return jsonify({"Error": "Invalid input"}), 405
     
     try:
-        post_data = PostData(request.form['secret'], int(request.form['expireAfterViews']), int(request.form['expireAfter']))
+        # Parse JSON data (form data is for simple forms, but you want JSON here)
+        data = request.get_json()  # This will parse the JSON body sent from the React app
+        post_data = PostData(data['secretText'], int(data['retrievalCount']), int(data['expiryDate']))
+
         if post_data.post_to_db():
-            # Catch missing keys or invalid values
-            return jsonify({"Hash" : post_data.hash})
-            
+            return jsonify({"Hash": post_data.hash}), 200
+        else:
+            return jsonify({"Error": "Failed to save secret."}), 500
+
     except (KeyError, ValueError) as e:
-       return jsonify({"Error" : "Invalid input"}), 405
-    
+        return jsonify({"Error": "Invalid input"}), 405
+
+
+@main_blueprint.route("/secret/<hash>", methods=['GET'])  # Only GET for retrieving secret by hash
+def get_secret(hash):
+    try:
+        get_data = GetData(hash)
+        secret_data = get_data.get_secret()
+        if secret_data:
+            return jsonify(secret_data), 200
+        else:
+            return jsonify({"Error": "Secret not found."}), 405
+    except Exception as e:
+        return jsonify({"Error": "Error retrieving secret."}), 500 
     

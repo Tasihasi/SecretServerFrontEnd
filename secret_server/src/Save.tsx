@@ -10,7 +10,7 @@ const Save: React.FC = () => {
   // State to store the form data
   const [formData, setFormData] = useState<SaveFormData>({
     secretText: '',
-    retrievalCount: 1,
+    retrievalCount: 0,
     expiryDate: 0,
   });
 
@@ -31,7 +31,7 @@ const Save: React.FC = () => {
     // Add logic to submit the form data to the server here
     
 
-    const url = 'http://127.0.0.1:5000/secret/';
+    const url = 'http://127.0.0.1:5000/secret';
 
     try {
       // Make a POST request to the server
@@ -62,11 +62,11 @@ const Save: React.FC = () => {
 
 
   return (
-    <div>
-      <h2>Save Your Secret</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="secretText">Secret Text:</label>
+    <div className="form-container">
+      <h2 className="form-title">Save Your Secret</h2>
+      <form onSubmit={handleSubmit} className="form">
+        <div className="form-group">
+          <label htmlFor="secretText" className="form-label">Secret Text:</label>
           <input
             type="text"
             id="secretText"
@@ -74,11 +74,12 @@ const Save: React.FC = () => {
             value={formData.secretText}
             onChange={handleChange}
             required
+            className="form-input"
           />
         </div>
 
-        <div>
-          <label htmlFor="retrievalCount">Number of Times It Can Be Retrieved:</label>
+        <div className="form-group">
+          <label htmlFor="retrievalCount" className="form-label">Number of Times It Can Be Retrieved:</label>
           <input
             type="number"
             id="retrievalCount"
@@ -87,11 +88,12 @@ const Save: React.FC = () => {
             onChange={handleChange}
             min={1}
             required
+            className="form-input"
           />
         </div>
 
-        <div>
-          <label htmlFor="expiryDate">Expiry Date in minutes:</label>
+        <div className="form-group">
+          <label htmlFor="expiryDate" className="form-label">Expiry Date in minutes:</label>
           <input
             type="number"
             id="expiryDate"
@@ -99,10 +101,11 @@ const Save: React.FC = () => {
             value={formData.expiryDate}
             onChange={handleChange}
             required
+            className="form-input"
           />
         </div>
 
-        <button type="submit">Save Secret</button>
+        <button type="submit" className="submit-button">Save Secret</button>
       </form>
     </div>
   );
