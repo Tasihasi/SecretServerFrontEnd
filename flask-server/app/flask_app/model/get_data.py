@@ -23,8 +23,8 @@ class GetData:
         db = get_db()
 
         query = """
-        INSERT INTO secret (secretMessage, retrievalCount, expiration)
-        VALUES (?, ?, ?)
+        SELECT * FROM secret;
+
         """
     
     def get_secret(self):
