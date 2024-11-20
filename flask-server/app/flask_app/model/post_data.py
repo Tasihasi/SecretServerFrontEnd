@@ -114,6 +114,8 @@ class PostData:
 
         try:
             # Execute the query and commit the transaction
+
+            # TODO check if the hash is in the table and gen unique hash
             db.execute(query, data)
             db.commit()
             return True
