@@ -12,7 +12,7 @@ def home():
 
 
 # Route to handle POST request for creating a new secret and GET for retrieving it by hash
-@main_blueprint.route("/secret", methods=['POST'])  # Only POST for creating secret
+@main_blueprint.route("/secret", methods=['POST']) 
 def save_secret():
     if not is_valid_request(request):
         return jsonify({"Error": "Invalid input"}), 405
@@ -31,13 +31,18 @@ def save_secret():
         return jsonify({"Error": "Invalid input"}), 405
 
 
-@main_blueprint.route("/secret/<hash>", methods=['GET'])  # Only GET for retrieving secret by hash
+@main_blueprint.route("/secret/<hash>", methods=['GET']) 
 def get_secret(hash):
     try:
         get_data = GetData(hash)
+
         secret_data = get_data.get_secret()
+        # TODO Check what goes on here 
+        return secret_data
+
         if secret_data:
-            return jsonify(secret_data), 200
+
+            return jsonify({"Message" : secret_data}), 200
         else:
             return jsonify({"Error": "Secret not found."}), 405
     except Exception as e:

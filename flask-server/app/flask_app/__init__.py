@@ -1,9 +1,8 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from . import db
 
-# Initialize the database object
-db = SQLAlchemy()
+
 
 def create_app():
     app = Flask(__name__)
@@ -11,6 +10,9 @@ def create_app():
 
     # Initialize the database with the app
     db.init_app(app)
+
+    # Register the command for initializing the database
+    app.cli.add_command(db.init_db_command)
 
     CORS(app)
 
