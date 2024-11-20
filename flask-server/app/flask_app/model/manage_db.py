@@ -1,8 +1,6 @@
 from ..db import get_db
 
 class ManageDB:
-
-    # TODO  delete a record if retrivelcount is 0
     @staticmethod
     def _delete_record(hash:str) -> bool:
         if not hash:

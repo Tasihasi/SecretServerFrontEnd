@@ -13,7 +13,7 @@ class PostData:
         self._secret_text = secret_text
         self._expire_after_views = expire_after_views
         self._expire_after = expire_after
-        self._hash = self._generate_hash()
+        self._hash = self._generate_unique_hash()
         self._created_at = datetime.now()
         self._expiration_date = self._calculate_expiration()
 
@@ -67,30 +67,36 @@ class PostData:
     def _generate_hash(self):
         # Simple hash generation method
         return hashlib.sha256(self.secret_text.encode()).hexdigest()
+    
+    def _is_hash_unique(self, hash: str) -> bool:
+        db = get_db()
+
+        # Check if the generated hash is already in the database
+        query = "SELECT 1 FROM secret WHERE hashText = ? LIMIT 1;"
+        result = db.execute(query, (hash,)).fetchone()
+        return result is None  # If no record found, the hash is unique
+    
+    def _generate_unique_hash(self) -> str:
+        # Generate a unique hash
+        while True:
+            generated_hash = self._generate_hash()  # Generate hash from the secret text
+            if self._is_hash_unique(generated_hash):  # Check if the hash is unique
+                return generated_hash  # If unique, return the hash
+            # Otherwise, regenerate the hash (in case of conflict)
 
     def _calculate_expiration(self):
         if self.expire_after <= 0:
             return None
         else:
             return self.created_at + timedelta(minutes=self.expire_after)
-
-
-    def _to_dict(self):
-        # Returns secret data as dictionary for JSON or XML responses
-        return {
-            "hash": self.hash,
-            "secret": self.secret_text,
-            "expire_after_views": self.expire_after_views,
-            "expire_after": self.expire_after,
-            "created_at": self.created_at.isoformat(),
-            "expiration_date": self.expiration_date.isoformat() if self.expiration_date else None,
-        }
     
     def _check_necessary_data(self) -> bool:
         if self.hash and self.secret_text and self.expire_after and self.expire_after_views:
             return True
         
         return False
+    
+    
     
     def post_to_db(self) -> bool:
 
@@ -115,7 +121,6 @@ class PostData:
         try:
             # Execute the query and commit the transaction
 
-            # TODO check if the hash is in the table and gen unique hash
             db.execute(query, data)
             db.commit()
             return True
