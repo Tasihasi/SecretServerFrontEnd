@@ -24,15 +24,24 @@ class GetData:
 
         # Get the database connection
         db = get_db()
-
-        query = """
-        SELECT * FROM secret WHERE hashText = ?;
-        """
-
         try:
 
-            # Execute the query and fetch the result
-            result = db.execute(query, (self._hash,)).fetchone()
+            # Decrease the retrieval count, ensuring it is only updated if count > 0
+            update_query = """
+            UPDATE secret
+            SET retrievalCount = retrievalCount - 1
+            WHERE hashText = ? AND retrievalCount > 0;
+            """
+            db.execute(update_query, (self._hash,))
+            db.commit()
+
+            # Now fetch the secretMessage from the same row
+            select_query = """
+            SELECT secretMessage FROM secret WHERE hashText = ? AND retrievalCount > 0;
+            """
+            result = db.execute(select_query, (self._hash,)).fetchone()
+
+
 
             # If a row is found, return the secretMessage, otherwise return a default message
             if result:
