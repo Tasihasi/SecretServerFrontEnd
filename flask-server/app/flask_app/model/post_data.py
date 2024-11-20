@@ -4,7 +4,7 @@ from flask import jsonify
 
 class PostData:
     def __init__(self, secret_text: str, expire_after_views: int, expire_after: int):
-        if  expire_after < 0:
+        if expire_after_views < 1 or expire_after < 0:
             raise ValueError("Expiration values must be non-negative")
         
         self._secret_text = secret_text

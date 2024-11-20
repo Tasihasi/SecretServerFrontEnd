@@ -2,9 +2,13 @@ from flask import request
 
 def is_valid_request(req: request) -> bool:
     # Use .get() to avoid KeyErrors when fields are missing
-    secret = req.form.get('secret')
-    expire_after_views = req.form.get('expireAfterViews')
-    expire_after = req.form.get('expireAfter')
+
+    # Use .get() to avoid KeyErrors when fields are missing
+    data = req.get_json()  # Expecting JSON input
+
+    secret = data.get('secretText')
+    expire_after_views = data.get('retrievalCount')
+    expire_after = data.get('expiryDate')
 
     # Check if any required field is missing or has an empty value
     if not secret or not expire_after_views or not expire_after:

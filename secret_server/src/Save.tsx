@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 interface SaveFormData {
   secretText: string;
   retrievalCount: number;
-  expiryDate: string;
+  expiryDate: number;
 }
 
 const Save: React.FC = () => {
@@ -11,7 +11,7 @@ const Save: React.FC = () => {
   const [formData, setFormData] = useState<SaveFormData>({
     secretText: '',
     retrievalCount: 1,
-    expiryDate: '',
+    expiryDate: 0,
   });
 
   // Handle input change
@@ -24,12 +24,42 @@ const Save: React.FC = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Example: Show data in the console, you can modify this to submit data to the backend
     console.log('Form Submitted:', formData);
     // Add logic to submit the form data to the server here
+    
+
+    const url = 'http://127.0.0.1:5000/secret/';
+
+    try {
+      // Make a POST request to the server
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      // Check if the request was successful
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Response from server:', result);
+
+      } else {
+        console.error('Error:', response.statusText);
+      }
+
+      } catch (error) {
+      console.error('Network error:', error);
+      }
   };
+
+
+
 
   return (
     <div>
@@ -61,9 +91,9 @@ const Save: React.FC = () => {
         </div>
 
         <div>
-          <label htmlFor="expiryDate">Expiry Date:</label>
+          <label htmlFor="expiryDate">Expiry Date in minutes:</label>
           <input
-            type="date"
+            type="number"
             id="expiryDate"
             name="expiryDate"
             value={formData.expiryDate}
