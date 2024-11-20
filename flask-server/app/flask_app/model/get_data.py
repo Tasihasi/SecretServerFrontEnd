@@ -20,5 +20,5 @@ class GetData:
 
     
     def get_secret(self):
-        return jsonify({"secret" : self._decode_text(self._get_text_from_db())}), 200
+        return jsonify({"secret" : str(self._decode_text(self._get_text_from_db()))}), 200
 

@@ -36,15 +36,8 @@ def get_secret(hash):
     try:
         get_data = GetData(hash)
 
-        secret_data = get_data.get_secret()
-        # TODO Check what goes on here 
-        return secret_data
+        return get_data.get_secret()
 
-        if secret_data:
-
-            return jsonify({"Message" : secret_data}), 200
-        else:
-            return jsonify({"Error": "Secret not found."}), 405
     except Exception as e:
         return jsonify({"Error": "Error retrieving secret."}), 500 
     

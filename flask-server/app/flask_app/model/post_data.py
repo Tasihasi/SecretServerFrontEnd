@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta
 import hashlib
 from flask import jsonify
+from .. import db
+
+
 
 class PostData:
     def __init__(self, secret_text: str, expire_after_views: int, expire_after: int):
@@ -85,5 +88,18 @@ class PostData:
     
     def post_to_db(self) -> bool:
         return True
+
+        secret = self._to_dict()
+
+        try:
+             db.session.add(secret)
+             db.session.commit()
+             return True
+        
+        except Exception as e:
+
+            print(f"An error occurred: {e}")
+            db.session.rollback()
+            return False
     
     
